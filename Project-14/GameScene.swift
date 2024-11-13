@@ -65,9 +65,29 @@ class GameScene: SKScene {
             }
 
             let gameOver = SKSpriteNode(imageNamed: "gameOver")
+            gameOver.name = "gameOver"
             gameOver.position = CGPoint(x: 512, y: 384)
             gameOver.zPosition = 1
             addChild(gameOver)
+            run(SKAction.playSoundFileNamed("Игра окончена!Vova.m4a", waitForCompletion: false))
+            
+            // Создаем уведомление с кнопкой для перезапуска игры
+            let ac = UIAlertController(
+                title: "Your score: \(score)",
+                message: "Press OK to start the game again",
+                preferredStyle: .alert
+            )
+            
+            // Добавляем действие OK, которое перезапускает игру
+            ac.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                self?.restartGame()
+            })
+            // Ищем родительский UIViewController
+            if let viewController = view?.window?.rootViewController {
+                viewController.present(ac, animated: true)
+            }
+            
+            print("Игра окончена")
 
             return
         }
@@ -118,5 +138,19 @@ class GameScene: SKScene {
         }
     }
     
-    
+    func restartGame() {
+        // Сбрасываем значения для новой игры
+        score = 0
+        numRounds = 0
+        popupTime = 0.85
+        
+        if let gameOverNode = childNode(withName: "gameOver") {
+              gameOverNode.removeFromParent()
+          }
+        
+        // Перезапускаем процесс создания врагов
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.createEnemy()
+        }
+    }
 }
