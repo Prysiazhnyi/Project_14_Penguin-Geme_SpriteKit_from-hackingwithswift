@@ -121,7 +121,12 @@ class GameScene: SKScene {
             if !whackSlot.isVisible { continue }
             if whackSlot.isHit { continue }
             whackSlot.hit()
-
+            
+            if let smoke = SKEmitterNode(fileNamed: "Smoke") {
+                 smoke.position = whackSlot.position
+                 addChild(smoke)
+             }
+            
             if node.name == "charFriend" {
                 // they shouldn't have whacked this penguin
                 score -= 5
